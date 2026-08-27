@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="A Go example for creating tax-ready Stripe Checkout subscriptions with Numeral." />
+    <link rel="icon" href="/favicon.svg" />
+    <link rel="stylesheet" href="/styles.css" />
+    <title>Northstar subscription checkout</title>
+  </head>
+  <body data-price-cents="{{PRICE_CENTS}}" data-billing-interval="{{BILLING_INTERVAL}}">
+    <main class="checkout-shell">
+      <header class="site-header">
+        <a class="brand" href="/" aria-label="Northstar home">
+          <span class="brand-mark" aria-hidden="true">N</span>
+          <span>northstar</span>
+        </a>
+        <div class="secure-label">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.75 8V6.25a3.25 3.25 0 0 1 6.5 0V8m-7.5 0h8.5A1.75 1.75 0 0 1 16 9.75v6.5A1.75 1.75 0 0 1 14.25 18h-8.5A1.75 1.75 0 0 1 4 16.25v-6.5A1.75 1.75 0 0 1 5.75 8Z" /></svg>
+          Secure subscription
+        </div>
+      </header>
+
+      <section class="checkout-card">
+        <div class="checkout-form-panel">
+          <div class="checkout-heading">
+            <p class="eyebrow">Go SDK example</p>
+            <h1>Start your subscription</h1>
+            <p>Numeral validates the tax location and Stripe securely collects your payment details.</p>
+          </div>
+
+          <section class="collection-choice" aria-labelledby="collection-label">
+            <div class="collection-choice-heading">
+              <span id="collection-label">Tax location</span>
+              <small>Five subscription integration paths</small>
+            </div>
+            <div class="collection-toggle" role="radiogroup" aria-label="Choose how Numeral receives the tax location">
+              <button type="button" role="radio" aria-checked="true" class="active" data-mode="merchant">Address</button>
+              <button type="button" role="radio" aria-checked="false" data-mode="customer_ip">Customer IP</button>
+              <button type="button" role="radio" aria-checked="false" data-mode="device_ip">My IP</button>
+              <button type="button" role="radio" aria-checked="false" data-mode="numeral_embedded">Embedded</button>
+              <button type="button" role="radio" aria-checked="false" data-mode="numeral_hosted">Hosted</button>
+            </div>
+            <p id="mode-description">Northstar already has the billing address, so Numeral can calculate tax before opening Stripe.</p>
+          </section>
+
+          <form id="checkout-form">
+            <fieldset id="address-fields">
+              <div class="legend-row">
+                <legend>Billing address</legend>
+                <span>Used for subscription tax</span>
+              </div>
+              <div class="field-stack">
+                <label>
+                  <span>Country</span>
+                  <select name="country" autocomplete="billing country">
+                    <option value="US">United States</option>
+                  </select>
+                </label>
+                <label>
+                  <span>Address line 1</span>
+                  <input name="line1" autocomplete="billing address-line1" placeholder="123 Market Street" />
+                </label>
+                <label>
+                  <span>Address line 2 <em>optional</em></span>
+                  <input name="line2" autocomplete="billing address-line2" placeholder="Apartment, suite, etc." />
+                </label>
+                <div class="field-row">
+                  <label>
+                    <span>City</span>
+                    <input name="city" autocomplete="billing address-level2" placeholder="New York" />
+                  </label>
+                  <label>
+                    <span>State</span>
+                    <select name="province" autocomplete="billing address-level1">
+                      <option value="">Select state</option>
+                      <option value="AL">Alabama</option><option value="AK">Alaska</option><option value="AZ">Arizona</option><option value="AR">Arkansas</option><option value="CA">California</option><option value="CO">Colorado</option><option value="CT">Connecticut</option><option value="DE">Delaware</option><option value="DC">District of Columbia</option><option value="FL">Florida</option><option value="GA">Georgia</option><option value="HI">Hawaii</option><option value="ID">Idaho</option><option value="IL">Illinois</option><option value="IN">Indiana</option><option value="IA">Iowa</option><option value="KS">Kansas</option><option value="KY">Kentucky</option><option value="LA">Louisiana</option><option value="ME">Maine</option><option value="MD">Maryland</option><option value="MA">Massachusetts</option><option value="MI">Michigan</option><option value="MN">Minnesota</option><option value="MS">Mississippi</option><option value="MO">Missouri</option><option value="MT">Montana</option><option value="NE">Nebraska</option><option value="NV">Nevada</option><option value="NH">New Hampshire</option><option value="NJ">New Jersey</option><option value="NM">New Mexico</option><option value="NY">New York</option><option value="NC">North Carolina</option><option value="ND">North Dakota</option><option value="OH">Ohio</option><option value="OK">Oklahoma</option><option value="OR">Oregon</option><option value="PA">Pennsylvania</option><option value="RI">Rhode Island</option><option value="SC">South Carolina</option><option value="SD">South Dakota</option><option value="TN">Tennessee</option><option value="TX">Texas</option><option value="UT">Utah</option><option value="VT">Vermont</option><option value="VA">Virginia</option><option value="WA">Washington</option><option value="WV">West Virginia</option><option value="WI">Wisconsin</option><option value="WY">Wyoming</option>
+                    </select>
+                  </label>
+                </div>
+                <label>
+                  <span>ZIP code</span>
+                  <input name="postalCode" inputmode="numeric" autocomplete="billing postal-code" placeholder="10001" />
+                </label>
+              </div>
+            </fieldset>
+
+            <fieldset id="customer-ip-fields" hidden>
+              <legend>Customer location</legend>
+              <div class="field-stack">
+                <label>
+                  <span>Customer public IP</span>
+                  <input name="ipAddress" inputmode="decimal" value="76.121.4.10" placeholder="76.121.4.10" />
+                </label>
+                <p class="field-help">Send the public IP your trusted proxy received—not your application server's IP.</p>
+              </div>
+            </fieldset>
+
+            <div id="preview" class="collector-preview" hidden>
+              <span class="collector-preview-icon" aria-hidden="true">
+                <svg viewBox="0 0 20 20"><path d="M6.75 8V6.25a3.25 3.25 0 0 1 6.5 0V8m-7.5 0h8.5A1.75 1.75 0 0 1 16 9.75v6.5A1.75 1.75 0 0 1 14.25 18h-8.5A1.75 1.75 0 0 1 4 16.25v-6.5A1.75 1.75 0 0 1 5.75 8Z" /></svg>
+              </span>
+              <div>
+                <strong id="preview-title">Numeral will collect the billing address</strong>
+                <p id="preview-copy">The subscription session starts first; Numeral asks only for the fields tax calculation still needs.</p>
+              </div>
+            </div>
+
+            <section id="collector-section" class="collector-section" hidden>
+              <div class="collector-heading">
+                <div><span class="collector-live-dot"></span><strong>Secure address step</strong></div>
+                <span>Powered by Numeral</span>
+              </div>
+              <div id="collector-host" class="numeral-collector-host"></div>
+            </section>
+
+            <div id="checkout-error" class="checkout-error" role="alert" hidden>
+              <strong>Subscription checkout could not start.</strong>
+              <span id="checkout-error-message"></span>
+            </div>
+
+            <button id="checkout-button" class="checkout-button" type="submit">
+              <span id="checkout-button-label">Continue to subscribe</span>
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7.5 4.5 5.5 5.5-5.5 5.5" /></svg>
+            </button>
+            <p class="demo-hint">Demo tip: use ZIP <strong>10001</strong> and state <strong>New York</strong>.</p>
+          </form>
+        </div>
+
+        <aside class="order-panel">
+          <div class="order-sticky">
+            <p class="eyebrow">Your subscription</p>
+            <div class="product-row">
+              <div class="product-art" aria-hidden="true"><span class="product-orbit"></span><span class="product-core">N</span></div>
+              <div class="product-copy"><strong>Starter plan</strong><span>Recurring subscription</span></div>
+              <div class="product-price"><span id="product-price"></span><small id="product-interval"></small></div>
+            </div>
+            <div class="summary-lines">
+              <div><span>Subtotal</span><span id="subtotal"></span></div>
+              <div><span>Tax</span><span id="tax-summary" class="tax-pending">Calculated next</span></div>
+            </div>
+            <div class="summary-total">
+              <div><span>Due today</span><small>Then billed each <span id="total-interval"></span></small></div>
+              <strong id="total-due"></strong>
+            </div>
+            <div class="bridge-note">
+              <span class="bridge-spark" aria-hidden="true">✦</span>
+              <div><strong>Subscriptions and tax by Numeral</strong><p>Numeral validates the location, calculates recurring tax, and prepares the Stripe Checkout subscription.</p></div>
+            </div>
+            <div class="powered-by"><span>Payments by <strong>stripe</strong></span><i></i><span>Tax by <strong>Numeral</strong></span></div>
+          </div>
+        </aside>
+      </section>
+      <footer><span>Go SDK · Test environment</span><a href="https://www.numeralhq.com/">Learn about Numeral</a></footer>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
