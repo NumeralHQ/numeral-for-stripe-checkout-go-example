@@ -28,9 +28,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	clientOptions := []option.RequestOption{option.WithAPIKey(config.NumeralAPIKey)}
-	if config.NumeralAPIBaseURL != "https://api.numeralhq.com" {
-		clientOptions = append(clientOptions, option.WithBaseURL(strings.TrimRight(config.NumeralAPIBaseURL, "/")+"/"))
+	// The generated SDK also reads NUMERAL_API_BASE_URL directly. Always pass
+	// the normalized base URL so an environment value ending in /tax cannot
+	// produce requests to /tax/tax/bridge/*.
+	clientOptions := []option.RequestOption{
+		option.WithAPIKey(config.NumeralAPIKey),
+		option.WithBaseURL(strings.TrimRight(config.NumeralAPIBaseURL, "/") + "/"),
 	}
 	client := numeraltax.NewClient(clientOptions...)
 	sessions := checkout.NewService(client, checkout.ServiceConfig{

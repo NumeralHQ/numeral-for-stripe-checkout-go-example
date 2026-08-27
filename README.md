@@ -73,6 +73,10 @@ NUMERAL_STRIPE_CHECKOUT_CONFIG_ID=brcfg_replace_me
 STRIPE_RECURRING_PRICE_ID=price_replace_me
 ```
 
+`STRIPE_RECURRING_PRICE_ID` must reference a recurring Price from the same
+Stripe test account selected by the `brcfg_...` configuration. A Price created
+for a one-time payment cannot be used with `checkout.mode: "subscription"`.
+
 Then start the checkout:
 
 ```bash
@@ -85,6 +89,12 @@ Open [http://localhost:3004](http://localhost:3004). On Stripe Checkout, use
 The example defaults to Numeral's production API and hosted collector while
 using test-mode credentials and Stripe objects. The optional endpoint variables
 in `.env.example` are only needed when developing Numeral itself.
+
+If you set `NUMERAL_API_BASE_URL`, use the API origin
+(`https://api.numeralhq.com`). The application also normalizes a legacy value
+ending in `/tax` and explicitly passes the resulting origin to the generated Go
+SDK. This prevents the SDK's `tax/bridge/...` endpoint paths from accidentally
+becoming `/tax/tax/bridge/...`.
 
 ## Copyable Go SDK examples
 
